@@ -1,0 +1,27 @@
+
+<nz-table #basicTable  [nzData]="parametres">
+  <thead>
+    <tr>
+      <th>Parametre</th>
+      <th>Valeur</th>
+      <th>Save</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of parametres" [attr.id]="data.collaborateurId">
+      <td>{{data.parametreName}}</td>
+      <td>
+          <nz-input-number *ngIf="data.parametreType == 'int'" nz-input  [(ngModel)]="data.parametreValue"></nz-input-number>
+
+          <div nz-col [nzSpan]="12" *ngIf="data.parametreType == 'string'" >
+            <input nz-input  [(ngModel)]="data.parametreValue">
+          </div>
+         &nbsp;
+         <div nz-col [nzSpan]="12" *ngIf="data.parametreType == 'text'" >
+         <textarea rows="4" nz-input [(ngModel)]="data.parametreValue"></textarea>
+</div>
+</td>
+<td><button nz-button nzType="primary" (click)="save(data)">save</button>   </td> 
+    </tr>
+  </tbody>
+</nz-table>

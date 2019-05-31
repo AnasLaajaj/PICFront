@@ -1,0 +1,93 @@
+<!--<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Ilem</a>
+    </div>
+    <ul class="nav navbar-nav" routerLinkActive="active">
+      <li class="nav-item"><a class="nav-link" routerLink="home">Home</a></li>
+      <li class="nav-item"><a class="nav-link" routerLink="availability">Availability</a></li>
+      <li class="nav-item">
+      <nz-dropdown>
+        <a nz-dropdown>
+          Collaborateurs et Métiers <i nz-icon type="down"></i>
+        </a>
+        <ul nz-menu nzSelectable>
+          <li nz-menu-item>
+            <a routerLink="collaborateur">Collaborateur</a>
+          </li>
+          <li nz-menu-item>
+            <a routerLink="metier">Métier</a>
+          </li>
+        
+        </ul>
+      </nz-dropdown>
+    </li>
+      <li *ngIf="authority === 'user'" class="nav-item">
+        <a class="nav-link" routerLink="user">User Board</a>
+      </li>
+      <li *ngIf="authority === 'admin'" class="nav-item">
+        <a class="nav-link" routerLink="admin">Admin Board</a>
+      </li>
+      <li *ngIf="authority === 'pm'" class="nav-item">
+        <a class="nav-link" routerLink="pm">PM Board</a>
+      </li>
+      <li *ngIf="!authority" class="nav-item">
+        <a class="nav-link" routerLink="auth/login">Login</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+  <router-outlet></router-outlet>
+</div> -->
+
+
+
+
+
+
+
+
+<nz-layout class="layout" style="min-height: 100%;">
+  <nz-header  *ngIf="info.token; else loggedOut" style="position:fixed; width:100%;z-index: 1000;">
+    <div class="logo"></div>
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'horizontal'" style="line-height: 64px;">
+      <li nz-menu-item><a class="nav-link" routerLink="home">Accueil</a></li>
+      <li nz-submenu>
+        <span title><span class="nav-text">Collaborateurs/métiers</span></span>
+        <ul>
+          <li nz-menu-item><a routerLink="collaborateur">Collaborateur</a></li>
+          <li nz-menu-item><a routerLink="metier">Métier</a></li>
+        </ul>
+      </li>
+      <li nz-menu-item><a class="nav-link" routerLink="periodessai">Période d'essai</a></li>
+      <li nz-menu-item><a class="nav-link" routerLink="parametres">Paramétres</a></li>
+
+      <li nz-submenu>
+        <span title><span class="nav-text">Utilisateurs/Rôles</span></span>
+        <ul>
+          <li nz-menu-item><a class="nav-link" routerLink="signup">Utilisateurs</a></li>
+          <li nz-menu-item><a class="nav-link" routerLink="roles">Rôles</a></li>
+        </ul>
+      </li>
+
+        <li *ngIf="!authority" nz-menu-item style="float: right;">
+          <a class="nav-link" routerLink="auth/login">Se connecter</a>
+        </li>
+        <li *ngIf="authority" nz-menu-item style="float: right;">
+        <a class="nav-link" (click)="logout()">Se déconnecter</a>
+      </li>
+
+     
+    </ul>
+  </nz-header>
+  <nz-content style="padding:0 50px;margin-top:64px;">
+    <div id='test' style="background:#fff; padding: 24px;margin-top: 40px;; min-height: 600px;">
+   
+<router-outlet>
+</router-outlet>
+</div>
+  </nz-content>
+  <nz-footer class="footer" style="text-align: center;" nzAlign="bottom">Ilem Group 2019</nz-footer>
+</nz-layout>
+

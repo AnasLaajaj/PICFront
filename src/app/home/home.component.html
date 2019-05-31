@@ -1,0 +1,51 @@
+<div *ngIf="info.token">
+  <div style="border-bottom: 1px solid rgb(233, 233, 233);">
+    <label nz-checkbox [(ngModel)]="checked" (ngModelChange)="showCancelled()" [nzIndeterminate]="indeterminate">
+      Afficher les rendez-vous annulés ou reportés.
+    </label>
+  </div>
+  <nz-calendar [(ngModel)]="date" (nzSelectChange)="selectChange($event)">
+    <ul *nzDateCell="let date" class="events">
+      <ng-container [ngSwitch]="date | date: 'yyyy-MM-dd'">
+        <ng-container *ngFor="let app of appointments">
+          <ng-container *ngSwitchCase="app.startTime | date: 'yyyy-MM-dd'">
+            <ul>
+              <li>
+                <button nz-button nz-popover nzTitle="{{app.title}}" [nzContent]="contentTemplate" nzTrigger="hover"
+                  [nzType]="app.status === 'Actif' ? 'secondary' : 'danger'"
+                  nzSize="small">{{app.startTime | date: 'HH:mm'}}</button>
+                <ng-template #contentTemplate>
+                  <div style="max-width: 300px">
+                    <div nz-row>
+                      <div nz-col nzSpan="12">Début:</div>
+                      <div nz-col nzSpan="12">{{app.startTime | date: 'HH:mm'}}</div>
+                    </div>
+                    <div nz-row>
+                      <div nz-col nzSpan="12">Fin:</div>
+                      <div nz-col nzSpan="12">{{app.endTime | date: 'HH:mm'}}</div>
+                    </div>
+                    <div nz-row>
+                      <div nz-col nzSpan="12">Status:</div>
+                      <div nz-col nzSpan="12">{{app.status}}</div>
+                    </div>
+                    <div nz-row>
+                      <div nz-col nzSpan="12">Type:</div>
+                      <div nz-col nzSpan="12">{{app.type}}</div>
+                    </div>
+                    <div nz-row>
+                        <div nz-col nzSpan="12">Participants:</div><br>
+                        <ul><li><div nz-col nzSpan="116" *ngFor="let item of app.attendees">{{item}}</div></li></ul>
+                      </div>
+  
+                  </div>
+                </ng-template>
+              </li>
+            </ul>
+
+
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ul>
+  </nz-calendar>
+</div>

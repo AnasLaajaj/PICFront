@@ -1,0 +1,79 @@
+<button nz-button nzType="primary" (click)="showModal()">
+  <span>Nouveau role</span></button>
+  <br><br>
+    <nz-alert nzBanner nzCloseable *ngIf="errorTable" nzType="error" nzMessage="{{errorTable}}"></nz-alert>
+
+
+<nz-modal nzWidth="650" [(nzVisible)]="isVisible" nzTitle="Nouveau role"
+ (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+  <br><br>  <nz-alert nzBanner nzCloseable *ngIf="error" nzType="error" nzMessage="{{error}}">
+
+  </nz-alert>
+
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+ 
+    <nz-form-item>
+      <nz-form-control [nzSpan]="12">
+
+        <input nz-input type="hidden" formControlName="id">
+      </nz-form-control>
+
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="name" nzRequired>
+          nom
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="nom" formControlName="name" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Les priviléges</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+      <nz-select
+      
+      style="width: 100%"
+      nzMode="multiple"
+      nzPlaceHolder="choisir les priviléges"
+      formControlName="privilegesChoosen"
+      [(ngModel)]="privilegesChoosen">
+      <nz-option *ngFor="let option of privileges" [nzLabel]="option.name" [nzValue]="option"></nz-option>
+    </nz-select>
+    </nz-form-control>
+    </nz-form-item>
+    
+    <nz-form-item>
+      <nz-form-control [nzOffset]="7" [nzSpan]="12">
+        <button nz-button nzType="primary" [disabled]="!validateForm.valid">Valider</button>
+        <button nz-button (click)="resetForm($event)">Reset</button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+
+<br>
+
+<nz-table #basicTable [nzData]="roles">
+  <thead>
+    <tr>
+      <th>Le role</th>
+      <th>Les priviléges</th>
+      <th>Actions</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of roles">
+      <td>{{data.name}}</td>
+      <td><li *ngFor="let item of data.privileges">{{item.name}}</li></td>
+      <td>
+        <a (click)="modifier(data)">Modifier</a>
+      </td>
+
+    </tr>
+  </tbody>
+</nz-table>
+
+

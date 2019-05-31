@@ -1,0 +1,323 @@
+<button nz-button nzType="primary" (click)="showModal()">
+    <span>Ajouter un collaborateur</span>
+</button>
+<br>
+<br>
+<nz-alert nzBanner nzCloseable *ngIf="errorTable" nzType="error" nzMessage="{{errorTable}}"></nz-alert>
+
+<nz-modal nzWidth="700" [(nzVisible)]="isVisible" nzTitle="Ajouter un collaborateur" (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+    <nz-alert *ngIf="error" nzType="error" nzMessage="{{error}}"></nz-alert>
+
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+        <nz-form-item>
+            <nz-form-control [nzSpan]="12">
+
+                <input nz-input type="hidden" formControlName="collaborateurId"
+                    [ngModel]="edit ? collaborateur.collaborateurId :''">
+            </nz-form-control>
+
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>
+                Nom prénom
+            </nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback>
+                <input nz-input formControlName="userName" [ngModel]="edit ? collaborateur.namee :''">
+                <nz-form-explain
+                    *ngIf="validateForm.get('userName').dirty && validateForm.get('userName').errors || validateForm.get('userName').pending ">
+                    <ng-container *ngIf="validateForm.get('userName').hasError('required')">Please input the name!
+                    </ng-container>
+                    <ng-container *ngIf="validateForm.get('userName').hasError('duplicated')">The username is redundant!
+                    </ng-container>
+                    <ng-container *ngIf="validateForm.get('userName').pending">Validating...</ng-container>
+                </nz-form-explain>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>
+                E-mail
+            </nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback>
+                <input nz-input formControlName="email" placeholder="email" type="email"
+                    (ngModelChange)="onChange($event)" [ngModel]="edit ? collaborateur.outlookMail: ''"
+                    [nzAutocomplete]="auto">
+                <nz-autocomplete #auto>
+                    <nz-auto-option *ngFor="let option of options" [nzValue]="option">
+                        {{option}}
+                    </nz-auto-option>
+                </nz-autocomplete>
+                <nz-form-explain *ngIf="validateForm.get('email').dirty&&validateForm.get('email').errors">
+                    <ng-container *ngIf="validateForm.get('email').hasError('email')">The input is not valid E-mail!
+                    </ng-container>
+                    <ng-container *ngIf="validateForm.get('email').hasError('required')">Please input your E-mail!
+                    </ng-container>
+                </nz-form-explain>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>
+                Métier
+            </nz-form-label>
+            <nz-select style="width: 200px;" [compareWith]="compareMetier" nzShowSearch nzAllowClear
+                nzPlaceHolder="Choisir le métier" formControlName="metier" [ngModel]="edit ? collaborateur.metier:''">
+                <nz-option *ngFor="let item of metiers" nzLabel="{{item.name}}" [nzValue]="item"></nz-option>
+            </nz-select>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-label [nzSpan]="7" nzRequired>
+                Responsable
+            </nz-form-label>
+
+            <nz-select style="width: 200px;" [compareWith]="compareResp" nzShowSearch nzAllowClear
+                nzPlaceHolder="Choisir le responsable" formControlName="manager"
+                [ngModel]="edit ? collaborateur.manager:''">
+                <nz-option *ngFor="let item of managers" nzLabel="{{item.namee}}" [nzValue]="item">
+                </nz-option>
+
+            </nz-select>
+
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control [nzSpan]="12">
+                <label nz-checkbox formControlName="checked" [(ngModel)]="checked"
+                    [ngModel]="edit ? collaborateur.newCol: 'checked'">
+                    <span>Nouveau colaborateur</span>
+                </label>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item *ngIf="checked">
+            <nz-form-label [nzSm]="8" [nzXs]="24" nzRequired>
+                Date d'arrivée
+            </nz-form-label>
+            <nz-form-control [nzSm]="16" [nzXs]="24">
+                <nz-date-picker formControlName="dateArrivee" [ngModel]="edit ? collaborateur.dateArrivee :''">
+                </nz-date-picker>
+            </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+            <nz-form-control [nzOffset]="7" [nzSpan]="12">
+                <button nz-button nzType="primary" [disabled]="!validateForm.valid">
+                    Submit
+                </button>
+                <button nz-button (click)="resetForm($event)">
+                    Reset
+                </button>
+            </nz-form-control>
+        </nz-form-item>
+    </form>
+</nz-modal>
+
+<br>
+<nz-table nzBordered nzShowQuickJumper nzShowSizeChanger [nzData]="collaborateurs">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Outlook mail</th>
+            <th>Metier</th>
+            <th>Responsable</th>
+            <th>Actions</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let data of collaborateurs" [attr.id]="data.collaborateurId">
+            <td>
+                {{data.namee}}
+                <i nz-icon nz-tooltip nzTitle="Rupture du contrat"
+                    *ngIf="data.periodessai && data.periodessai.etat == 'Rupture'" type="close" theme="outline"></i>
+            </td>
+            <td>{{data.outlookMail}}</td>
+            <td>
+                {{data.metier.name}}
+                <nz-divider nzType="vertical"></nz-divider>
+                <i nz-icon nz-tooltip nzTitle="Nouveau collaborateur" *ngIf="data.newCol" type="alert"
+                    theme="twotone"></i>
+            </td>
+            <td *ngIf="data.manager">{{data.manager.namee}}</td>
+            <td *ngIf="!data.manager">Sans responsable</td>
+
+            <td>
+                <nz-dropdown>
+
+                    <a nz-dropdown class="operation">
+                        Actions
+                        <i nz-icon type="down"></i>
+                    </a>
+
+                    <ul nz-menu>
+                        <li nz-menu-item>
+                            <a nz-popconfirm nzTitle="sûr de supprimer?" (nzOnConfirm)="delete(data.collaborateurId)">
+                                Supprimer
+                            </a>
+                        </li>
+                        <li nz-menu-item>
+                            <a (click)="eddit(data)">Modifier</a>
+                        </li>
+                        <li nz-menu-item>
+                            <a (click)="freeTime(data)">Disponibilité</a>
+                        </li>
+                        <li nz-menu-item>
+                            <a *ngIf="data.newCol" (click)="replanifierPresentations(data)">
+                                Refaire la planification les
+                                présentations
+                            </a>
+                        </li>
+                        <li nz-menu-item>
+                            <a *ngIf="data.newCol" (click)="showModalAppointment(data.outlookMail)">
+                                Consulter les présentations
+                            </a>
+                        </li>
+                    </ul>
+                </nz-dropdown>
+            </td>
+        </tr>
+    </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="isVisibleF" nzTitle="Disponibilité " (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+    [nzOkLoading]="isOkLoading">
+    <app-datepicker></app-datepicker>
+    <br>
+    <br>
+    Managers
+    <nz-select style="width: 100%" nzMode="multiple" nzPlaceHolder="Choisir les managers" [(ngModel)]="managersdisp">
+        <nz-option *ngFor="let option of managers" [nzLabel]="option.namee" [nzValue]="option"></nz-option>
+    </nz-select>
+
+    <br>
+    <br>
+
+    <button nz-button nzType="primary" (click)="getResultsFreeTime(startValue,endValue)">
+        Disponibilité
+    </button>
+    <nz-table #filterTable *ngIf="sugs != null" [nzData]="sugs">
+        <thead nzSingleSort>
+            <tr>
+                <th nzShowSort nzSortKey="startValue">
+                    Suggestions
+                </th>
+                <th nzShowSort nzSortKey="actions">
+                    actions
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of sugs">
+                <td>{{data.meetingTime | date:'short' }}</td>
+                <td>
+                    <button nz-button [nzLoading]="data.isLoading">
+                        <i nz-icon type="pushpin" theme="twotone"></i>
+                    </button>
+                </td>
+            </tr>
+            <nz-pagination [nzPageIndex]="1" [nzTotal]="50"></nz-pagination>
+
+        </tbody>
+    </nz-table>
+
+</nz-modal>
+
+<nz-modal nzWidth="600" [(nzVisible)]="isVisibleManuel" nzTitle="Planification manuelle" (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+    <nz-table *ngFor="let item of sugs " [nzScroll]="{ x: '150px', y: '150px' }">
+        <thead>
+            <tr>
+                <th>{{item.nv}}</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let itemm of item.ts">
+                <td>{{itemm.meetingTime | date:'short'}}</td>
+                <td>
+                    <a (click)="appointManuel(itemm,item.nv,itemm.meetingTime)">
+                        <i nz-icon *ngIf="!itemm.isFinished" type="paper-clip" theme="outline"></i>
+                        <i nz-icon *ngIf="itemm.isFinished" type="check-circle" theme="outline"></i>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </nz-table>
+</nz-modal>
+
+<nz-modal nzWidth="1100" [(nzVisible)]="isVisibleAppointments" nzTitle="Présentations " (nzOnCancel)="handleCancel()"
+    (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+    <nz-table #filterTable [nzData]="apps">
+        <thead nzSingleSort>
+            <tr>
+                <th nzShowSort nzSortKey="actions">
+                    Participants
+                </th>
+                <th nzShowSort nzSortKey="actions">
+                    Date début
+                </th>
+                <th nzShowSort nzSortKey="actions">
+                    Date fin
+                </th>
+                <th nzShowSort nzSortKey="actions">
+                    Etat
+                </th>
+                <th nzShowSort nzSortKey="actions">
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let data of apps">
+                <td>
+                    <li *ngFor="let part of data.collaborateurs">{{part.namee}}</li>
+                </td>
+                <td>{{data.startTime | date:'short' }}</td>
+                <td>{{data.endTime | date:'short' }}</td>
+                <td>
+                    {{data.reponse}}
+                    <i nz-icon *ngIf="data.reponse =='Annulé'" type="warning" theme="twotone">
+                    </i>
+                    <i nz-icon *ngIf="data.reponse=='tout le monde a accepté'" type="check-circle" theme="twotone"
+                        nzTwotoneColor="#52c41a"></i>
+                </td>
+                <td>
+                    <nz-dropdown>
+                        <a nz-dropdown class="operation">
+                            Actions
+                            <i nz-icon type="down"></i>
+                        </a>
+                        <ul nz-menu>
+                            <li nz-menu-item>
+                                <a (click)="cancelApp(data.codeAppointment)">Annuler</a>
+                            </li>
+                            <li nz-menu-item>
+                                <a nzType="primary" nz-popover nzTitle="number of days" nzTrigger="click"
+                                    [nzContent]="contentTemplate">
+                                    Reporter par jours
+                                </a>
+                            </li>
+                            <ng-template style="background-color: lightslategrey;" #contentTemplate>
+                                <nz-input-number [(ngModel)]="nbDays" [nzMin]="1" [nzMax]="29" [nzStep]="1">
+                                </nz-input-number>
+                                <button nz-button nzType="primary"
+                                    (click)="appointmentReport(data.codeAppointment,data.endTime,nbDays)">
+                                    Reporter
+                                </button>
+
+                            </ng-template>
+
+                            <li nz-menu-item>
+
+                                <a (click)="appointmentReportt(data.codeAppointment,data.endTime)">reporter
+                                    automatiquement</a>
+                            </li>
+                        </ul>
+                    </nz-dropdown>
+                </td>
+            </tr>
+
+        </tbody>
+    </nz-table>
+
+</nz-modal>

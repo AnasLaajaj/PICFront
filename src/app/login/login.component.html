@@ -1,0 +1,47 @@
+<div *ngIf="isLoggedIn; else loggedOut">
+  Logged in as {{roles}}.
+</div>
+
+<ng-template #loggedOut>
+
+<nz-card style="width:400px;">
+
+    <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm($event,validateForm.value)">
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group [nzPrefix]="prefixUser">
+              <input type="text" nz-input formControlName="username" placeholder="Username" />
+            </nz-input-group>
+            <nz-form-explain *ngIf="validateForm.get('username')?.dirty && validateForm.get('username')?.errors"
+              >Please input your username!</nz-form-explain
+            >
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <nz-input-group [nzPrefix]="prefixLock">
+              <input type="password" nz-input formControlName="password" placeholder="Password" />
+            </nz-input-group>
+            <nz-form-explain *ngIf="validateForm.get('password')?.dirty && validateForm.get('password')?.errors"
+              >Please input your Password!</nz-form-explain
+            >
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-control>
+            <button nz-button class="login-form-button" [nzType]="'primary'">Log in</button>
+          
+              <nz-alert
+        *ngIf="errorMessage"
+        nzType="error"
+        nzMessage="{{errorMessage}}"
+    ></nz-alert>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+      <ng-template #prefixUser><i nz-icon type="user"></i></ng-template>
+      <ng-template #prefixLock><i nz-icon type="lock"></i></ng-template>
+    
+    </nz-card>
+
+  </ng-template>

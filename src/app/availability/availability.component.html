@@ -1,0 +1,101 @@
+  
+<div *ngIf="info.token; else loggedOut">
+
+        <div class="container">
+
+              <h1 *ngIf="done">{{done}}</h1>
+                <nz-input-group [nzSuffix]="suffixTemplate" [nzPrefix]="prefixTemplate">
+                  <input type="text" nz-input  placeholder="Enter the email" [(ngModel)]="username">
+                </nz-input-group>
+                <ng-template #suffixTemplate><i nz-icon type="close-circle" (click)="username=null" *ngIf="username"></i></ng-template>
+              <br/><br/>     
+
+
+                <nz-date-picker       
+      [nzDisabledDate]="disabledStartDate"
+      nzShowTime
+      nzFormat="yyyy-MM-dd HH:mm:ss"
+      [(ngModel)]="startValue"
+      nzPlaceHolder="Start"
+      (ngModelChange)="onStartChange($event)"
+      (nzOnOpenChange)="handleStartOpenChange($event)">
+    </nz-date-picker>
+    <nz-date-picker
+      [nzDisabledDate]="disabledEndDate"
+      nzShowTime
+      nzFormat="yyyy-MM-dd HH:mm:ss"
+      [(ngModel)]="endValue"
+      nzPlaceHolder="End"
+      [nzOpen]="endOpen"
+      (ngModelChange)="onEndChange($event)"
+      (nzOnOpenChange)="handleEndOpenChange($event)">
+    </nz-date-picker>
+    
+                <button nz-button nzType="primary" (click)="Submite()">Availability</button>&nbsp;
+                <button nz-button nzType="primary" (click)="Submitee()">Free time</button>
+
+                <br/><br/>
+                <nz-table #filterTable *ngIf="avs" [nzData]="displayData">
+                  <thead  nzSingleSort>
+                    <tr>
+                      <th nzShowSort nzSortKey="startValue">startDate</th>
+                      <th nzShowSort nzSortKey="endValue">endDate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of avs">
+                      <td>{{data.startTime | date:'short' }}</td>
+                      <td>{{data.endTime | date:'short'}}</td>
+                    </tr>
+                  </tbody>
+                </nz-table>`
+                <br/><br/>
+                <nz-table #filterTable *ngIf="sugs" [nzData]="displayData">
+                  <thead  nzSingleSort>
+                    <tr>
+                      <th nzShowSort nzSortKey="startValue">Suggestions</th>
+                      <th nzShowSort nzSortKey="actions">actions</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let data of sugs">
+                      <td>{{data.meetingTime | date:'short' }}</td>
+                      <td> <button nz-button (click)="Submiteee(data)" [nzLoading]="data.isLoading"><i nz-icon type="pushpin" theme="twotone"></i></button></td>
+                    </tr>
+                    <nz-pagination [nzPageIndex]="1" [nzTotal]="50"></nz-pagination>
+
+                  </tbody>
+                </nz-table>
+
+        </div>
+</div>
+////////////////////////////////////////////////////////////////
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+  <nz-form-item *ngFor="let control of controlArray;let i = index">
+    <nz-form-label [nzXs]="24" [nzSm]="4" *ngIf="i==0" [nzFor]="control.controlInstance">collaboraters</nz-form-label>
+    <nz-form-control [nzXs]="24" [nzSm]="20" [nzOffset]="i==0?0:4">
+      <input nz-input style="width: 60%; margin-right:8px;" placeholder="placeholder" [attr.id]="control.id" [formControlName]="control.controlInstance">
+      <i nz-icon type="minus-circle-o" class="dynamic-delete-button" (click)="removeField(control,$event)"></i>
+      <nz-form-explain *ngIf="getFormControl(control.controlInstance)?.dirty&&getFormControl(control.controlInstance)?.hasError('required')">
+        Please input collaborater's Outlook or delete this field.
+      </nz-form-explain>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control [nzXs]="{span:24,offset:0}" [nzSm]="{span:20,offset:4}">
+      <button nz-button nzType="dashed" style="width:60%" (click)="addField($event)"><i nz-icon type="plus"></i> Add collaborater</button>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control [nzXs]="{span:24,offset:0}" [nzSm]="{span:20,offset:4}">
+      <button nz-button nzType="primary">Submit</button>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+
+
+<ng-template #loggedOut>
+  Please login.
+</ng-template>

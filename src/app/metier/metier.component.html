@@ -1,0 +1,55 @@
+<button nz-button nzType="primary" (click)="showModal()">
+  <span>Ajouter un métier</span>
+</button>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Ajouter un métier" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+    <nz-alert *ngIf="error" nzType="error" nzMessage="{{error}}"></nz-alert>
+
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+      <nz-form-item  >
+          <nz-form-control [nzSpan]="12">
+    
+          <input nz-input type="hidden" formControlName="id" [ngModel]="edit ? metier.id :''">
+          </nz-form-control>
+      </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="7" nzRequired>Nom de métier</nz-form-label>
+      <nz-form-control [nzSpan]="12" nzHasFeedback>
+        <input nz-input formControlName="userName" [ngModel]="edit ? metier.name :''">
+        <nz-form-explain *ngIf="validateForm.get('userName').dirty && validateForm.get('userName').errors || validateForm.get('userName').pending ">
+          <ng-container *ngIf="validateForm.get('userName').hasError('required')">
+            Saisir le nom de métier!
+          </ng-container>
+          <ng-container *ngIf="validateForm.get('userName').pending">
+            Validating...
+          </ng-container>
+        </nz-form-explain>
+      </nz-form-control>
+  
+    </nz-form-item>
+        <nz-form-item>
+            <nz-form-control [nzOffset]="7" [nzSpan]="12">
+              <button nz-button nzType="primary" [disabled]="!validateForm.valid">Valider</button>
+              <button nz-button (click)="resetForm($event)">Reset</button>
+            </nz-form-control>
+          </nz-form-item>
+        </form></nz-modal>
+
+
+        <nz-table #basicTable [nzData]="metiers">
+          <thead>
+            <tr>
+              <th>métier</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of metiers">
+              <td>{{data.name}}</td>
+              <td>
+                <a (click)="delete(data.id)">Supprimer</a>
+                <nz-divider nzType="vertical"></nz-divider>
+                <a (click)="eddit(data)">Modifier</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>

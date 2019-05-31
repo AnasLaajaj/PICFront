@@ -1,0 +1,189 @@
+
+<!-- 
+<div *ngIf="isSignedUp; else signupForm">
+  Your registration is successful. Please login!
+</div>
+
+<ng-template #signupForm>
+  <div class="row col-sm-6" style="max-width:350px;">
+    <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+      <div class="form-group">
+        <label for="name">nom</label>
+        <input type="text" class="form-control" name="name" [(ngModel)]="form.name" #name="ngModel" required />
+        <div *ngIf="f.submitted && name.invalid">
+          <div *ngIf="name.errors.required">Saisir le nom</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="username">utilisateur</label>
+        <input type="text" class="form-control" name="username" [(ngModel)]="form.username" #username="ngModel"
+          required />
+        <div *ngIf="f.submitted && username.invalid">
+          <div *ngIf="username.errors.required">saisir le nom d'utilisateur</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" name="email" [(ngModel)]="form.email" #email="ngModel" required email />
+        <div *ngIf="f.submitted && email.invalid">
+          <div *ngIf="email.errors.required">Email is required</div>
+          <div *ngIf="email.errors.email">Email must be a valid email address</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">mot de passe</label>
+        <input type="password" class="form-control" name="password" [(ngModel)]="form.password" #password="ngModel"
+          required minlength="6" />
+        <div *ngIf="f.submitted && password.invalid">
+          <div *ngIf="password.errors.required">Saisir le mot de passe</div>
+          <div *ngIf="password.errors.minlength">Password must be at least 6 characters</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary">Valider</button>
+        <div *ngIf="f.submitted && isSignUpFailed" class="alert alert-warning">
+          Signup failed!<br/>{{errorMessage}}
+        </div>
+      </div>
+    </form>
+  </div>
+</ng-template> -->
+
+
+
+
+
+
+
+
+<button nz-button nzType="primary" (click)="showModal()">
+  <span>Ajouter un nouveau utilisateur</span></button>
+  <br><br>
+
+  <nz-table nzBordered #basicTable [nzData]="users">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nom</th>
+        <th>Nom d'utilisateur</th>
+        <th>E-mail</th>
+        <th>role</th>
+        <th>Actions</th>
+
+
+  
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of users">
+        <td>{{data.id}}</td>
+        <td>{{data.name}}</td>
+        <td>{{data.username}}</td>
+        <td>{{data.email}} </td>
+        <td>{{data.role.name}} </td>
+
+
+        <td>
+          <nz-dropdown>
+  
+            <a nz-dropdown class="operation">
+              Actions <i nz-icon type="down"></i>
+            </a>
+  
+            <ul nz-menu>
+            
+              <li nz-menu-item>
+                <a (click)="eddit(data)" >Modifier</a>
+              </li>
+              <li nz-menu-item>
+                <a (click)="delete(data.id)">Supprimer</a></li>
+            
+            </ul>
+          </nz-dropdown>
+  
+  
+        </td>
+  
+      </tr>
+    </tbody>
+  </nz-table>
+
+
+<nz-modal nzWidth="650" [(nzVisible)]="isVisible" nzTitle="Ajouter un nouveau utilisateur"
+ (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()" [nzOkLoading]="isOkLoading">
+  <nz-alert nzBanner nzCloseable *ngIf="errorMessage" nzType="error" nzMessage="{{errorMessage}}"></nz-alert>
+
+<form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm($event,validateForm.value)">
+    <nz-form-item>
+        <nz-form-control>
+          <input nz-input type="hidden" formControlName="id" [ngModel]="edit ? user.id :''"/>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">E-mail</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input formControlName="email" [ngModel]="edit ? user.email :''" />
+          <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
+            The input is not valid E-mail!
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="password" nzRequired>Password</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input
+            nz-input
+            type="password"
+            id="password"
+            formControlName="password"
+          />
+          <nz-form-explain *ngIf="validateForm.get('password')?.dirty && validateForm.get('password')?.errors"
+            >Please input your password!</nz-form-explain
+          >
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>
+            Nom d'utilisateur
+        </nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input id="nickname" formControlName="username" [ngModel]="edit ? user.username :''" />
+          <nz-form-explain *ngIf="validateForm.get('username')?.dirty && validateForm.get('username')?.errors"
+            >Please input your nickname!</nz-form-explain
+          >
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nom" nzRequired>
+            nom
+        </nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input id="nom" formControlName="name" [ngModel]="edit ? user.name :''" />
+          <nz-form-explain *ngIf="validateForm.get('name')?.dirty && validateForm.get('name')?.errors"
+            >Please input your name!</nz-form-explain
+          >
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+  <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired>Role</nz-form-label>
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-select style="width: 200px;" [compareWith]="compareRole" nzShowSearch nzAllowClear nzPlaceHolder="choisir le role"
+           formControlName="role" [ngModel]="edit ? user.role :''" >
+            <nz-option *ngFor="let item of roles" nzLabel="{{item.name}}" [nzValue]="item"></nz-option>
+         
+          </nz-select>
+          </nz-form-control>
+
+</nz-form-item>
+      <nz-form-item nz-row style="margin-bottom:8px;">
+        <nz-form-control [nzSpan]="14" [nzOffset]="6">
+          <button nz-button nzType="primary">Register</button>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+</nz-modal>
+    
